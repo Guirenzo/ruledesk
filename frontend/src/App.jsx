@@ -148,37 +148,45 @@ function App() {
     [evaluation]
   );
 
+  const pageMeta = {
+    simulator: ["Simulador", "Avalie um chamado e acompanhe o raciocínio do motor de regras"],
+    how: ["Como funciona", "Fundamentos de sistemas baseados em regras"],
+    knowledge: ["Base de conhecimento", "As 16 regras de produção do RuleDesk"]
+  }[tab];
+
   return (
     <div className="app">
-      <div className="bg-orbs" aria-hidden="true">
-        <span className="orb orb-a" />
-        <span className="orb orb-b" />
-      </div>
-
-      <header className="shell header-shell">
-        <div className="brand-block">
+      <aside className="sidebar">
+        <div className="side-brand">
           <div className="brand-mark">
-            <BrainCircuit size={26} />
+            <BrainCircuit size={20} />
           </div>
-          <div>
-            <div className="brand-title">
-              <h1>RuleDesk</h1>
-              <span className="brand-tag">IA Simbólica</span>
-            </div>
-            <p>Sistema especialista para triagem inteligente de chamados de TI</p>
+          <div className="side-brand-text">
+            <strong>RuleDesk</strong>
+            <span>IA Simbólica</span>
           </div>
         </div>
 
-        <div className="header-actions">
+        <nav className="side-nav">
+          <span className="side-label">Menu</span>
+          {TABS.map(([key, label, Icon]) => (
+            <button
+              key={key}
+              type="button"
+              className={`nav-item ${tab === key ? "active" : ""}`}
+              onClick={() => setTab(key)}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="side-foot">
           <div className={`status-pill ${apiStatus}`}>
             <span className="status-dot" />
-            <Server size={15} />
             <span>
-              {apiStatus === "online"
-                ? "API online"
-                : apiStatus === "checking"
-                ? "Verificando..."
-                : "API offline"}
+              {apiStatus === "online" ? "API online" : apiStatus === "checking" ? "Verificando..." : "API offline"}
             </span>
           </div>
           <button
@@ -187,55 +195,46 @@ function App() {
             onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
             title={theme === "light" ? "Tema escuro" : "Tema claro"}
           >
-            {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+            {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}
           </button>
         </div>
-      </header>
+      </aside>
 
-      <nav className="shell tab-bar">
-        {TABS.map(([key, label, Icon]) => (
-          <button
-            key={key}
-            type="button"
-            className={`tab ${tab === key ? "active" : ""}`}
-            onClick={() => setTab(key)}
-          >
-            <Icon size={16} />
-            {label}
-          </button>
-        ))}
-      </nav>
+      <div className="main">
+        <header className="topbar">
+          <div className="topbar-title">
+            <h1>{pageMeta[0]}</h1>
+            <p>{pageMeta[1]}</p>
+          </div>
+          <span className="topbar-chip">Sistemas Baseados em Regras</span>
+        </header>
 
-      <main className="shell page">
-        {tab === "simulator" ? (
-          <SimulatorView
-            incident={incident}
-            evaluation={evaluation}
-            stats={stats}
-            history={history}
-            rules={rules}
-            loading={loading}
-            message={message}
-            activeScenario={activeScenario}
-            selectedPriority={selectedPriority}
-            score={score}
-            firedCodes={firedCodes}
-            onSubmit={handleSubmit}
-            onSeed={handleSeed}
-            onField={updateField}
-            onScenario={applyScenario}
-          />
-        ) : null}
+        <div className="content">
+          {tab === "simulator" ? (
+            <SimulatorView
+              incident={incident}
+              evaluation={evaluation}
+              stats={stats}
+              history={history}
+              rules={rules}
+              loading={loading}
+              message={message}
+              activeScenario={activeScenario}
+              selectedPriority={selectedPriority}
+              score={score}
+              firedCodes={firedCodes}
+              onSubmit={handleSubmit}
+              onSeed={handleSeed}
+              onField={updateField}
+              onScenario={applyScenario}
+            />
+          ) : null}
 
-        {tab === "how" ? <HowItWorks /> : null}
+          {tab === "how" ? <HowItWorks /> : null}
 
-        {tab === "knowledge" ? <KnowledgeBase rules={rules} firedCodes={firedCodes} /> : null}
-      </main>
-
-      <footer className="shell foot">
-        <span>RuleDesk · Seminário de Aplicações Inteligentes no Dia-a-Dia</span>
-        <span>Tema: Sistemas Baseados em Regras · Encadeamento para frente</span>
-      </footer>
+          {tab === "knowledge" ? <KnowledgeBase rules={rules} firedCodes={firedCodes} /> : null}
+        </div>
+      </div>
     </div>
   );
 }
