@@ -258,6 +258,7 @@ function SimulatorView({
   onScenario
 }) {
   return (
+    <>
     <div className="workspace">
       <section className="left-column">
         <div className="panel scenarios-panel">
@@ -400,15 +401,24 @@ function SimulatorView({
         <DiagnosisCard evaluation={evaluation} priority={selectedPriority} score={score} />
         <InferenceTrace evaluation={evaluation} />
         <RecommendationsCard evaluation={evaluation} />
-
-        <div className="dashboard-grid">
-          <StatsPanel stats={stats} />
-          <HistoryPanel history={history} />
-        </div>
-
-        <TopRulesPanel stats={stats} rules={rules} firedCodes={firedCodes} />
       </section>
     </div>
+
+    <section className="ops-dashboard">
+      <div className="section-heading ops-heading">
+        <Activity size={18} />
+        <div>
+          <h2>Painel operacional</h2>
+          <p>Histórico e indicadores das avaliações salvas</p>
+        </div>
+      </div>
+      <div className="ops-grid">
+        <StatsPanel stats={stats} />
+        <HistoryPanel history={history} />
+        <TopRulesPanel stats={stats} rules={rules} firedCodes={firedCodes} />
+      </div>
+    </section>
+    </>
   );
 }
 

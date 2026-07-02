@@ -349,16 +349,52 @@ p {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(340px, 0.82fr) minmax(500px, 1.18fr);
-  gap: 18px;
+  grid-template-columns: minmax(340px, 0.8fr) minmax(500px, 1.2fr);
+  gap: 22px;
   align-items: start;
 }
 
 .left-column,
 .right-column {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   align-content: start;
+}
+
+/* coluna de entrada acompanha a rolagem enquanto o resultado é longo */
+.left-column {
+  position: sticky;
+  top: 14px;
+  align-self: start;
+  max-height: calc(100vh - 28px);
+  overflow: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+.left-column::-webkit-scrollbar {
+  width: 7px;
+}
+.left-column::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+}
+
+/* faixa full-width com histórico e indicadores */
+.ops-dashboard {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 16px;
+}
+.ops-heading h2 {
+  font-size: 18px;
+}
+.ops-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) minmax(0, 1.5fr);
+  gap: 16px;
+  align-items: start;
 }
 
 /* scenarios */
@@ -1450,8 +1486,14 @@ button:disabled {
 /* responsive */
 @media (max-width: 1080px) {
   .workspace,
-  .dashboard-grid {
+  .dashboard-grid,
+  .ops-grid {
     grid-template-columns: 1fr;
+  }
+  .left-column {
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
   .blocks-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
