@@ -3,7 +3,9 @@ import {
   ArrowRight,
   BookOpen,
   BrainCircuit,
+  Check,
   CheckCircle2,
+  ChevronDown,
   ClipboardList,
   Database,
   FlaskConical,
@@ -23,7 +25,7 @@ import {
   Workflow,
   Zap
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   checkHealth,
   createIncident,
@@ -57,6 +59,71 @@ const TABS = [
   ["how", "Como funciona", BookOpen],
   ["knowledge", "Base de conhecimento", Layers]
 ];
+
+const SLA_OPTIONS = [
+  [1, "1 hora"],
+  [2, "2 horas"],
+  [4, "4 horas"],
+  [24, "24 horas"],
+  [72, "72 horas"]
+];
+
+// Dropdown customizado (o <select> nativo não é estilizável por dentro).
+function Select({ value, options, onChange, placeholder = "Selecionar" }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const current = options.find(([v]) => v === value);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    function onDoc(event) {
+      if (ref.current && !ref.current.contains(event.target)) setOpen(false);
+    }
+    function onKey(event) {
+      if (event.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  return (
+    <div className={`rd-select ${open ? "open" : ""}`} ref={ref}>
+      <button
+        type="button"
+        className="rd-select-btn"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span>{current ? current[1] : placeholder}</span>
+        <ChevronDown size={16} />
+      </button>
+      {open ? (
+        <ul className="rd-select-menu" role="listbox">
+          {options.map(([v, label]) => (
+            <li
+              key={String(v)}
+              role="option"
+              aria-selected={v === value}
+              className={`rd-option ${v === value ? "sel" : ""}`}
+              onClick={() => {
+                onChange(v);
+                setOpen(false);
+              }}
+            >
+              <span>{label}</span>
+              {v === value ? <Check size={15} /> : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
 
 function App() {
   const [tab, setTab] = useState("simulator");
@@ -303,30 +370,15 @@ function SimulatorView({
           </label>
 
           <div className="field-grid">
-            <label className="field">
+            <div className="field">
               <span>Categoria</span>
-              <select value={incident.category} onChange={(event) => onField("category", event.target.value)}>
-                {categories.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              <Select value={incident.category} options={categories} onChange={(v) => onField("category", v)} />
+            </div>
 
-            <label className="field">
+            <div className="field">
               <span>Ambiente</span>
-              <select
-                value={incident.environment}
-                onChange={(event) => onField("environment", event.target.value)}
-              >
-                {environments.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              <Select value={incident.environment} options={environments} onChange={(v) => onField("environment", v)} />
+            </div>
 
             <label className="field range-field">
               <span>
@@ -341,19 +393,10 @@ function SimulatorView({
               />
             </label>
 
-            <label className="field">
+            <div className="field">
               <span>SLA restante</span>
-              <select
-                value={incident.sla_hours}
-                onChange={(event) => onField("sla_hours", Number(event.target.value))}
-              >
-                <option value={1}>1 hora</option>
-                <option value={2}>2 horas</option>
-                <option value={4}>4 horas</option>
-                <option value={24}>24 horas</option>
-                <option value={72}>72 horas</option>
-              </select>
-            </label>
+              <Select value={incident.sla_hours} options={SLA_OPTIONS} onChange={(v) => onField("sla_hours", v)} />
+            </div>
           </div>
 
           <div className="switch-grid">
