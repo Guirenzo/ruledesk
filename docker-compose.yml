@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: ruledesk-backend
+    environment:
+      RULEDESK_HOST: 0.0.0.0
+      RULEDESK_PORT: 8000
+      RULEDESK_DB_PATH: /app/data/ruledesk.sqlite3
+    ports:
+      - "8000:8000"
+    volumes:
+      - ruledesk_data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: http://127.0.0.1:8000
+    container_name: ruledesk-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  ruledesk_data:
